@@ -11,10 +11,12 @@ import (
 
 const commentChar string = "#"
 
+// To do: add Windows support.
+const hostsFilePath string = "/etc/hosts"
+
 type hostsFileLine struct {
-	ip     string
-	hosts  []string
-	lineNo int
+	ip    string
+	hosts []string
 }
 
 func check(err error) {
@@ -29,6 +31,18 @@ func isComment(line string) bool {
 	return isComment
 }
 
+func parseLine(line string) hostsFileLine {
+	var output hostsFileLine
+
+	fields := strings.Fields(line)
+	if len(fields) == 0 {
+		log.Fatal(fmt.Sprintf("Unable to parse line: %q", line))
+	}
+
+	output = hostsFileLine{ip: fields[0], hosts: fields[1:]}
+	return output
+}
+
 func itemInSlice(item string, list []string) bool {
 	for _, i := range list {
 		if i == item {
@@ -39,26 +53,21 @@ func itemInSlice(item string, list []string) bool {
 	return false
 }
 
-func getHostLines() []hostsFileLine {
-	var output []hostsFileLine
+func getHostLines(includeComments bool) []string {
+	var output []string
 
-	hostsFile, err := os.Open("/etc/hosts")
+	hostsFile, err := os.Open(hostsFilePath)
 	check(err)
 	defer hostsFile.Close()
-
-	lineNo := 0
 
 	scanner := bufio.NewScanner(hostsFile)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if !isComment(line) {
-			fields := strings.Fields(line)
-			if len(fields) > 0 {
-				line := hostsFileLine{ip: fields[0], hosts: fields[1:], lineNo: lineNo}
-				output = append(output, line)
-			}
+		if isComment(line) && !includeComments {
+			continue
 		}
-		lineNo += 1
+
+		output = append(output, line)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -69,30 +78,50 @@ func getHostLines() []hostsFileLine {
 }
 
 func list() {
-	lines := getHostLines()
+	lines := getHostLines(false)
 	for i := range lines {
-		line := lines[i]
-		fmt.Printf("%s %s\n", line.ip, line.hosts)
+		fmt.Printf("%s\n", lines[i])
 	}
 }
 
-func lineInHosts(ip string, host string) bool {
-	lines := getHostLines()
+func lineInHosts(ip string, host string) int {
+	var line hostsFileLine
+
+	var lineNo = 0
+	lines := getHostLines(true)
 	for i := range lines {
-		if ip == lines[i].ip {
-			if itemInSlice(host, lines[i].hosts) {
-				return true
+		if !isComment(lines[i]) && lines[i] != "" {
+			line = parseLine(lines[i])
+			if ip == line.ip {
+				if itemInSlice(host, line.hosts) {
+					return lineNo
+				}
 			}
 		}
+
+		lineNo += 1
 	}
 
-	return false
+	return -1
+}
+
+func rewriteHosts(lines []string) error {
+	file, err := os.Create(hostsFilePath)
+	check(err)
+
+	w := bufio.NewWriter(file)
+
+	for _, line := range lines {
+		fmt.Fprintln(w, line)
+	}
+
+	return w.Flush()
 }
 
 func addLine(ip string, host string) {
 	var lines []string
 
-	hostsFile, err := os.OpenFile("/etc/hosts", os.O_APPEND|os.O_RDWR, 0770)
+	hostsFile, err := os.OpenFile(hostsFilePath, os.O_APPEND|os.O_RDWR, 0770)
 	check(err)
 	defer hostsFile.Close()
 
@@ -126,15 +155,8 @@ func addLine(ip string, host string) {
 		lines[lastLineNo] = fmt.Sprintf("%s %s", lines[lastLineNo], host)
 	}
 
-	newHostsFile, err := os.Create("/etc/hosts")
+	err = rewriteHosts(lines)
 	check(err)
-
-	w := bufio.NewWriter(newHostsFile)
-	defer w.Flush()
-
-	for _, line := range lines {
-		fmt.Fprintln(w, line)
-	}
 }
 
 func main() {
@@ -152,7 +174,7 @@ func main() {
 
 			ip := os.Args[2]
 			host := os.Args[3]
-			if !lineInHosts(ip, host) {
+			if lineInHosts(ip, host) == -1 {
 				fmt.Fprintf(os.Stderr, "%s %s is not in the hosts file\n", ip, host)
 				os.Exit(1)
 			}
@@ -167,7 +189,7 @@ func main() {
 
 			ip := os.Args[2]
 			host := os.Args[3]
-			if lineInHosts(ip, host) {
+			if lineInHosts(ip, host) != -1 {
 				fmt.Fprintf(os.Stderr, "Line already in host file. Nothing to do.\n")
 				os.Exit(2)
 			}
