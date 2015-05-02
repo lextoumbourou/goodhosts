@@ -94,6 +94,9 @@ func main() {
 			user, err := user.Current()
 			check(err)
 
+			err = hosts.Load()
+			check(err)
+
 			ip := os.Args[2]
 			host := os.Args[3]
 			hasEntry, err := hosts.HasEntry(ip, host)
@@ -111,6 +114,8 @@ func main() {
 
 			err = hosts.RemoveEntry(ip, host)
 			check(err)
+
+			hosts.Flush()
 			return
 		}
 	}
