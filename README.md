@@ -7,25 +7,25 @@ Simple host file management in Go.
 
 ## command-line usage
 
-### list all lines
+### list all entries
 
 ```
 $ goodhost list
 ```
 
-### check for ip/host pair
+### check an entry
 
 ```
 $ goodhost check 127.0.0.1 google.com 
 ```
 
-### add an ip/host
+### add an entry
 
 ```
 $ goodhost add 127.0.0.1 google.com
 ```
 
-### remove a line 
+### remove a line (coming soon)
 
 ```
 $ goodhost remove 127.0.0.1 google.com
