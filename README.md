@@ -1,4 +1,4 @@
-# Good Hosts
+# Goodhosts
 
 Simple [hosts file](http://en.wikipedia.org/wiki/Hosts_%28file%29) management in Go (golang).
 
