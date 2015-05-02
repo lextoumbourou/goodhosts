@@ -1,11 +1,10 @@
-package main
+package goodhost
 
 import (
 	"bufio"
 	"fmt"
 	"log"
 	"os"
-	"os/user"
 	"strings"
 )
 
@@ -17,12 +16,6 @@ const hostsFilePath string = "/etc/hosts"
 type hostsFileLine struct {
 	ip    string
 	hosts []string
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 func isComment(line string) bool {
@@ -53,11 +46,14 @@ func itemInSlice(item string, list []string) bool {
 	return false
 }
 
-func getHostLines(includeComments bool) []string {
+func GetLines(includeComments bool) ([]string, error) {
 	var output []string
 
 	hostsFile, err := os.Open(hostsFilePath)
-	check(err)
+	if err != nil {
+		return output, err
+	}
+
 	defer hostsFile.Close()
 
 	scanner := bufio.NewScanner(hostsFile)
@@ -71,40 +67,39 @@ func getHostLines(includeComments bool) []string {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		return output, err
 	}
 
-	return output
+	return output, nil
 }
 
-func list() {
-	lines := getHostLines(false)
-	for i := range lines {
-		fmt.Printf("%s\n", lines[i])
-	}
-}
-
-func lineInHosts(ip string, host string) int {
+func getPosition(ip string, host string) (int, error) {
 	var line hostsFileLine
 
-	lines := getHostLines(true)
+	lines, err := GetLines(true)
+	if err != nil {
+		return -1, err
+	}
+
 	for i := range lines {
 		if !isComment(lines[i]) && lines[i] != "" {
 			line = parseLine(lines[i])
 			if ip == line.ip {
 				if itemInSlice(host, line.hosts) {
-					return i
+					return i, nil
 				}
 			}
 		}
 	}
 
-	return -1
+	return -1, nil
 }
 
 func rewriteHosts(lines []string) error {
 	file, err := os.Create(hostsFilePath)
-	check(err)
+	if err != nil {
+		return err
+	}
 
 	w := bufio.NewWriter(file)
 
@@ -130,8 +125,17 @@ func getIpPosition(ip string, lines []string) int {
 	return -1
 }
 
-func addLine(ip string, host string) {
-	lines := getHostLines(true)
+func HasEntry(ip string, host string) (bool, error) {
+	pos, err := getPosition(ip, host)
+	return pos != -1, err
+}
+
+func AddEntry(ip string, host string) error {
+	lines, err := GetLines(true)
+	if err != nil {
+		return err
+	}
+
 	position := getIpPosition(ip, lines)
 
 	if position == -1 {
@@ -143,12 +147,16 @@ func addLine(ip string, host string) {
 		lines[position] = fmt.Sprintf("%s %s", lines[position], host)
 	}
 
-	err := rewriteHosts(lines)
-	check(err)
+	err = rewriteHosts(lines)
+	return err
 }
 
-func removeLine(ip string, host string) {
-	lines := getHostLines(true)
+func RemoveEntry(ip string, host string) error {
+	lines, err := GetLines(true)
+	if err != nil {
+		return err
+	}
+
 	pos := getIpPosition(ip, lines)
 	line := parseLine(lines[pos])
 
@@ -171,76 +179,6 @@ func removeLine(ip string, host string) {
 		lines[pos] = newLine
 	}
 
-	err := rewriteHosts(lines)
-	check(err)
-}
-
-func main() {
-	if len(os.Args) > 1 {
-		command := os.Args[1]
-		switch command {
-		case "list":
-			list()
-			return
-		case "check":
-			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhost check 127.0.0.1 salt")
-				os.Exit(1)
-			}
-
-			ip := os.Args[2]
-			host := os.Args[3]
-			if lineInHosts(ip, host) == -1 {
-				fmt.Fprintf(os.Stderr, "%s %s is not in the hosts file\n", ip, host)
-				os.Exit(1)
-			}
-			return
-		case "add":
-			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhost add 127.0.0.1 myhost")
-				os.Exit(1)
-			}
-			user, err := user.Current()
-			check(err)
-
-			ip := os.Args[2]
-			host := os.Args[3]
-			if lineInHosts(ip, host) != -1 {
-				fmt.Fprintf(os.Stderr, "Line already in host file. Nothing to do.\n")
-				os.Exit(2)
-			}
-
-			if user == nil || user.Uid != "0" {
-				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
-				os.Exit(1)
-			}
-
-			addLine(ip, host)
-			return
-		case "remove":
-			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhost add 127.0.0.1 myhost")
-				os.Exit(1)
-			}
-			user, err := user.Current()
-			check(err)
-
-			ip := os.Args[2]
-			host := os.Args[3]
-			if lineInHosts(ip, host) == -1 {
-				fmt.Fprintf(os.Stderr, "Line not in host file. Nothing to do.\n")
-				os.Exit(3)
-			}
-
-			if user == nil || user.Uid != "0" {
-				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
-				os.Exit(1)
-			}
-
-			removeLine(ip, host)
-			return
-		}
-	}
-
-	fmt.Println("Help should go here.")
+	err = rewriteHosts(lines)
+	return err
 }
