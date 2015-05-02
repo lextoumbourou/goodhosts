@@ -45,7 +45,7 @@ Send Facebook to localhost in hosts file.
 
 ```go
 func main() {
-    h, err = hosts.NewHosts()
+    h := hosts.NewHosts()
 
     // Note that nothing will be added to the hosts file until ``Flush`` is called.
     h.AddEntry("127.0.0.1", "facebook.com")
@@ -60,7 +60,7 @@ Remove Facebook from the hosts file
 
 ```go
 func main() {
-    h, err = hosts.NewHosts()
+    h := hosts.NewHosts()
 
     // Same deal, yo: call h.Flush() to make permanent.
     h.RemoveEntry("127.0.0.1", "facebook")
