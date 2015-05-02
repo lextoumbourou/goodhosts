@@ -87,19 +87,16 @@ func list() {
 func lineInHosts(ip string, host string) int {
 	var line hostsFileLine
 
-	var lineNo = 0
 	lines := getHostLines(true)
 	for i := range lines {
 		if !isComment(lines[i]) && lines[i] != "" {
 			line = parseLine(lines[i])
 			if ip == line.ip {
 				if itemInSlice(host, line.hosts) {
-					return lineNo
+					return i
 				}
 			}
 		}
-
-		lineNo += 1
 	}
 
 	return -1
@@ -118,44 +115,63 @@ func rewriteHosts(lines []string) error {
 	return w.Flush()
 }
 
-func addLine(ip string, host string) {
-	var lines []string
+func getIpPosition(ip string, lines []string) int {
+	var line hostsFileLine
 
-	hostsFile, err := os.OpenFile(hostsFilePath, os.O_APPEND|os.O_RDWR, 0770)
-	check(err)
-	defer hostsFile.Close()
-
-	lineNo := 0
-	lastLineNo := -1
-
-	scanner := bufio.NewScanner(hostsFile)
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-		if !isComment(line) {
-			fields := strings.Fields(line)
-			if len(fields) > 0 {
-				if ip == fields[0] {
-					lastLineNo = lineNo
-				}
+	for i := range lines {
+		if !isComment(lines[i]) && lines[i] != "" {
+			line = parseLine(lines[i])
+			if line.ip == ip {
+				return i
 			}
 		}
-		lineNo += 1
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
 	}
 
-	if lastLineNo == -1 {
-		// Ip line is already in file, so we just append our new line.
+	return -1
+}
+
+func addLine(ip string, host string) {
+	lines := getHostLines(true)
+	position := getIpPosition(ip, lines)
+
+	if position == -1 {
+		// Ip line is not in file, so we just append our new line.
 		endLine := fmt.Sprintf("%s %s", ip, host)
 		lines = append(lines, endLine)
 	} else {
 		// Otherwise, we replace the line in the correct position
-		lines[lastLineNo] = fmt.Sprintf("%s %s", lines[lastLineNo], host)
+		lines[position] = fmt.Sprintf("%s %s", lines[position], host)
 	}
 
-	err = rewriteHosts(lines)
+	err := rewriteHosts(lines)
+	check(err)
+}
+
+func removeLine(ip string, host string) {
+	lines := getHostLines(true)
+	pos := getIpPosition(ip, lines)
+	line := parseLine(lines[pos])
+
+	hostPos := -1
+	for i := range line.hosts {
+		if line.hosts[i] == host {
+			hostPos = i
+		}
+	}
+
+	newHosts := append(line.hosts[:hostPos], line.hosts[hostPos+1:]...)
+	if len(newHosts) == 0 {
+		// Just remove the line if there's no new hosts.
+		lines = append(lines[:pos], lines[pos+1:]...)
+	} else {
+		newLine := line.ip
+		for i := range newHosts {
+			newLine = fmt.Sprintf("%s %s", newLine, newHosts[i])
+		}
+		lines[pos] = newLine
+	}
+
+	err := rewriteHosts(lines)
 	check(err)
 }
 
@@ -200,6 +216,28 @@ func main() {
 			}
 
 			addLine(ip, host)
+			return
+		case "remove":
+			if len(os.Args) < 3 {
+				fmt.Println("usage: goodhost add 127.0.0.1 myhost")
+				os.Exit(1)
+			}
+			user, err := user.Current()
+			check(err)
+
+			ip := os.Args[2]
+			host := os.Args[3]
+			if lineInHosts(ip, host) == -1 {
+				fmt.Fprintf(os.Stderr, "Line not in host file. Nothing to do.\n")
+				os.Exit(3)
+			}
+
+			if user == nil || user.Uid != "0" {
+				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
+				os.Exit(1)
+			}
+
+			removeLine(ip, host)
 			return
 		}
 	}

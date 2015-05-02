@@ -25,7 +25,7 @@ $ goodhost check 127.0.0.1 google.com
 $ goodhost add 127.0.0.1 google.com
 ```
 
-### remove a line (coming soon)
+### remove a line
 
 ```
 $ goodhost remove 127.0.0.1 google.com
