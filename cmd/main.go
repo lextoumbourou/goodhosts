@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/lextoumbourou/goodhost"
+	"github.com/lextoumbourou/goodhosts"
 	"os"
 	"os/user"
 )
@@ -16,24 +16,39 @@ func check(err error) {
 func main() {
 	if len(os.Args) > 1 {
 		command := os.Args[1]
+		hosts := goodhosts.NewHosts()
+
 		switch command {
 		case "list":
-			lines, err := goodhost.GetLines(false)
+			// To do: make this a flag
+			hideComments := true
+
+			err := hosts.Load()
 			check(err)
 
-			for i := range lines {
-				fmt.Printf("%s\n", lines[i])
+			for _, line := range hosts.Lines {
+				if line.IsComment() && hideComments {
+					continue
+				}
+
+				fmt.Printf("%s\n", line.Raw)
 			}
+
+			fmt.Printf("\nTotal: %d\n", len(hosts.Lines))
+
 			return
 		case "check":
 			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhost check 127.0.0.1 salt")
+				fmt.Println("usage: goodhosts check 127.0.0.1 facebook.com")
 				os.Exit(1)
 			}
 
+			err := hosts.Load()
+			check(err)
+
 			ip := os.Args[2]
 			host := os.Args[3]
-			hasEntry, err := goodhost.HasEntry(ip, host)
+			hasEntry, err := hosts.HasEntry(ip, host)
 			check(err)
 
 			if !hasEntry {
@@ -43,15 +58,18 @@ func main() {
 			return
 		case "add":
 			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhost add 127.0.0.1 myhost")
+				fmt.Println("usage: goodhosts add 127.0.0.1 facebook.com")
 				os.Exit(1)
 			}
 			user, err := user.Current()
 			check(err)
 
+			err = hosts.Load()
+			check(err)
+
 			ip := os.Args[2]
 			host := os.Args[3]
-			hasEntry, err := goodhost.HasEntry(ip, host)
+			hasEntry, err := hosts.HasEntry(ip, host)
 			check(err)
 
 			if hasEntry {
@@ -64,12 +82,13 @@ func main() {
 				os.Exit(1)
 			}
 
-			err = goodhost.AddEntry(ip, host)
-			check(err)
+			hosts.AddEntry(ip, host)
+
+			hosts.Flush()
 			return
 		case "remove":
 			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhost add 127.0.0.1 myhost")
+				fmt.Println("usage: goodhost remove 127.0.0.1 facebook.com")
 				os.Exit(1)
 			}
 			user, err := user.Current()
@@ -77,7 +96,7 @@ func main() {
 
 			ip := os.Args[2]
 			host := os.Args[3]
-			hasEntry, err := goodhost.HasEntry(ip, host)
+			hasEntry, err := hosts.HasEntry(ip, host)
 			check(err)
 
 			if !hasEntry {
@@ -90,7 +109,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			err = goodhost.RemoveEntry(ip, host)
+			err = hosts.RemoveEntry(ip, host)
 			check(err)
 			return
 		}

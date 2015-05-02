@@ -1,17 +1,9 @@
-package goodhost
+package goodhosts
 
 import (
 	"fmt"
 	"testing"
 )
-
-func TestIsComment(t *testing.T) {
-	comment := "   # This is a comment   "
-	result := isComment(comment)
-	if !result {
-		t.Error(fmt.Sprintf("'%s' is a comment"))
-	}
-}
 
 func TestItemInSlice(t *testing.T) {
 	item := "this"
