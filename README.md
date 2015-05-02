@@ -33,3 +33,5 @@ $ goodhost add 10.0.0.5 music-server
 ```
 $ goodhost remove 10.0.0.5 music-server
 ```
+
+## [API Docs](API.md)
