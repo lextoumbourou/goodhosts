@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/user"
 	"strings"
 )
 
@@ -89,7 +90,51 @@ func lineInHosts(ip string, host string) bool {
 }
 
 func addLine(ip string, host string) {
-	fmt.Printf("About to add %s and %s to the hosts file.\n", ip, host)
+	var lines []string
+
+	hostsFile, err := os.OpenFile("/etc/hosts", os.O_APPEND|os.O_RDWR, 0770)
+	check(err)
+	defer hostsFile.Close()
+
+	lineNo := 0
+	lastLineNo := -1
+
+	scanner := bufio.NewScanner(hostsFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		lines = append(lines, line)
+		if !isComment(line) {
+			fields := strings.Fields(line)
+			if len(fields) > 0 {
+				if ip == fields[0] {
+					lastLineNo = lineNo
+				}
+			}
+		}
+		lineNo += 1
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	if lastLineNo == -1 {
+		// Ip line is already in file, so we just append our new line.
+		endLine := fmt.Sprintf("%s %s", ip, host)
+		lines = append(lines, endLine)
+	} else {
+		// Otherwise, we replace the line in the correct position
+		lines[lastLineNo] = fmt.Sprintf("%s %s", lines[lastLineNo], host)
+	}
+
+	newHostsFile, err := os.Create("/etc/hosts")
+	check(err)
+
+	w := bufio.NewWriter(newHostsFile)
+	defer w.Flush()
+
+	for _, line := range lines {
+		fmt.Fprintln(w, line)
+	}
 }
 
 func main() {
@@ -117,8 +162,20 @@ func main() {
 				fmt.Println("usage: goodhost add 127.0.0.1 myhost")
 				os.Exit(1)
 			}
+			user, err := user.Current()
+			check(err)
+
 			ip := os.Args[2]
 			host := os.Args[3]
+			if lineInHosts(ip, host) {
+				fmt.Fprintf(os.Stderr, "Line already in host file. Nothing to do.\n")
+				os.Exit(2)
+			}
+
+			if user == nil || user.Uid != "0" {
+				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
+				os.Exit(1)
+			}
 
 			addLine(ip, host)
 			return
