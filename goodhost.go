@@ -84,10 +84,8 @@ func getPosition(ip string, host string) (int, error) {
 	for i := range lines {
 		if !isComment(lines[i]) && lines[i] != "" {
 			line = parseLine(lines[i])
-			if ip == line.ip {
-				if itemInSlice(host, line.hosts) {
-					return i, nil
-				}
+			if ip == line.ip && itemInSlice(host, line.hosts) {
+				return i, nil
 			}
 		}
 	}
