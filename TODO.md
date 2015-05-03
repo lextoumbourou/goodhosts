@@ -6,4 +6,4 @@
 6. <del>Move ``Load()`` method to constructor.</del>
 7. <del>Add ```--all``` flag to ``list`` command.</del>
 8. <del>Add ``--help`` output.</del>
-9. Test IP address format.
+9. <del>Test IP address format.</del>

@@ -2,7 +2,9 @@ package goodhosts
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"net"
 	"os"
 	"strings"
 )
@@ -11,9 +13,10 @@ const commentChar string = "#"
 
 // Represents a single line in the hosts file.
 type HostsLine struct {
-	Ip    string
+	IP    string
 	Hosts []string
 	Raw   string
+	Err   error
 }
 
 // Return ```true``` if the line is a comment.
@@ -30,7 +33,18 @@ func NewHostsLine(raw string) HostsLine {
 		return HostsLine{Raw: raw}
 	}
 
-	return HostsLine{Ip: fields[0], Hosts: fields[1:], Raw: raw}
+	output := HostsLine{Raw: raw}
+	if !output.IsComment() {
+		rawIP := fields[0]
+		if net.ParseIP(rawIP) == nil {
+			output.Err = errors.New(fmt.Sprintf("Bad hosts line: %q", raw))
+		}
+
+		output.IP = rawIP
+		output.Hosts = fields[1:]
+	}
+
+	return output
 }
 
 // Represents a hosts file.
@@ -129,7 +143,7 @@ func (h *Hosts) RemoveEntry(ip string, host string) error {
 		// Just remove the line if there's no new hosts.
 		h.Lines = append(h.Lines[:pos], h.Lines[pos+1:]...)
 	} else {
-		newLineRaw := line.Ip
+		newLineRaw := line.IP
 		for i := range newHosts {
 			newLineRaw = fmt.Sprintf("%s %s", newLineRaw, newHosts[i])
 		}
@@ -144,7 +158,7 @@ func (h Hosts) getHostPosition(ip string, host string) int {
 	for i := range h.Lines {
 		line := h.Lines[i]
 		if !line.IsComment() && line.Raw != "" {
-			if ip == line.Ip && itemInSlice(host, line.Hosts) {
+			if ip == line.IP && itemInSlice(host, line.Hosts) {
 				return i
 			}
 		}
@@ -157,7 +171,7 @@ func (h Hosts) getIpPosition(ip string) int {
 	for i := range h.Lines {
 		line := h.Lines[i]
 		if !line.IsComment() && line.Raw != "" {
-			if line.Ip == ip {
+			if line.IP == ip {
 				return i
 			}
 		}
