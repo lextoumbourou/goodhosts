@@ -26,8 +26,7 @@ func TestHostsHasEntryFindsEntry(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
-	result, _ := hosts.HasEntry("10.0.0.7", "nada")
-	if !result {
+	if !hosts.HasEntry("10.0.0.7", "nada") {
 		t.Error("Failed to find entry.")
 	}
 }
@@ -37,8 +36,7 @@ func TestHostsHasEntryDoesntFindMissingEntry(t *testing.T) {
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
 
-	result, _ := hosts.HasEntry("10.0.0.7", "brada")
-	if result {
+	if hosts.HasEntry("10.0.0.7", "brada") {
 		t.Error("Found missing entry.")
 	}
 }
