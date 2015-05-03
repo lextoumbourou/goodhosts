@@ -19,31 +19,69 @@ $ goodhosts list
 ### Check for an entry.
 
 ```bash
-$ goodhosts check 10.0.0.5 my-home-server
+$ goodhosts check 127.0.0.1 facebook
 ```
 
 ### Add an entry.
 
 ```bash
-$ goodhosts add 10.0.0.5 music-server
+$ goodhosts add 127.0.0.1 facebook
 ```
 
 ### Remove an entry.
 
 ```bash
-$ goodhosts remove 10.0.0.5 music-server
+$ goodhosts remove 127.0.0.1 facebook
 ```
 
 ## API Usage
 
-### [Docs](API.md)
-
-### Examples
-
-Send Facebook to localhost in hosts file.
-
+### List entries.
 
 ```go
+package main
+
+import (
+    "fmt"
+    "github.com/lextoumbourou/goodhosts"
+)
+
+func main() {
+    h := hosts.NewHosts()
+    for _, line := range hosts.Lines {
+        fmt.Printf(line.Raw)
+    }
+}
+```
+
+### Check for an entry.
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/lextoumbourou/goodhosts"
+)
+
+func main() {
+    h := hosts.NewHosts()
+    if h.HasEntry("127.0.0.1", "facebook") {
+        fmt.Println("Entry exists!")
+    }
+}
+```
+
+### Add an entry.
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/lextoumbourou/goodhosts"
+)
+
 func main() {
     h := hosts.NewHosts()
 
@@ -56,9 +94,16 @@ func main() {
 }
 ```
 
-Remove Facebook from the hosts file
+### Remove an entry.
 
 ```go
+package main
+
+import (
+    "fmt"
+    "github.com/lextoumbourou/goodhosts"
+)
+
 func main() {
     h := hosts.NewHosts()
 
@@ -70,6 +115,15 @@ func main() {
     }
 }
 ```
+
+### [API Docs](API.md)
+
+## Changelog
+
+### 1.0.0 (2015-05-03)
+
+- Initial release.
+
 ## License
 
 [MIT](LICENSE)
