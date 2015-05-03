@@ -71,6 +71,17 @@ func TestHostsAddEntryWhenIpDoesntExist(t *testing.T) {
 	}
 }
 
+func TestHostsAddMultipleEntries(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda")}
+
+	hosts.AddEntry("127.0.0.1", "brada", "prada", "nada")
+	if hosts.Lines[0].Raw != "127.0.0.1 yadda brada prada nada" {
+		t.Error("Failed to add multiple entries.")
+	}
+}
+
 func TestHostsRemoveEntryWhenLastHostIpCombo(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{

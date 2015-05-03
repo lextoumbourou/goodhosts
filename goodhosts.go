@@ -106,15 +106,16 @@ func (h Hosts) Flush() error {
 }
 
 // Add an entry to the hosts file.
-func (h *Hosts) AddEntry(ip string, host string) {
+func (h *Hosts) AddEntry(ip string, hosts ...string) {
+
 	position := h.getIpPosition(ip)
 	if position == -1 {
+		endLine := NewHostsLine(buildRawLine(ip, hosts))
 		// Ip line is not in file, so we just append our new line.
-		endLine := NewHostsLine(fmt.Sprintf("%s %s", ip, host))
 		h.Lines = append(h.Lines, endLine)
 	} else {
 		// Otherwise, we replace the line in the correct position
-		endLine := NewHostsLine(fmt.Sprintf("%s %s", h.Lines[position].Raw, host))
+		endLine := NewHostsLine(buildRawLine(h.Lines[position].Raw, hosts))
 		h.Lines[position] = endLine
 	}
 }
