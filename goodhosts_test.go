@@ -2,6 +2,7 @@ package goodhosts
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -14,16 +15,90 @@ func TestHostsLineIsComment(t *testing.T) {
 	}
 }
 
-func TestHostsAddEntryWhenIpMissing(t *testing.T) {
-	hosts := NewHosts()
+func TestNewHostsLineWithEmptyLine(t *testing.T) {
+	line := NewHostsLine("")
+	if line.Raw != "" {
+		t.Error("Failed to load empty line.")
+	}
+}
 
-	line1 := NewHostsLine("127.0.0.1 yadda")
-	line2 := NewHostsLine("10.0.0.7 nada")
+func TestHostsHasEntryFindsEntry(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
+	result, _ := hosts.HasEntry("10.0.0.7", "nada")
+	if !result {
+		t.Error("Failed to find entry.")
+	}
+}
 
-	hosts.Lines = []HostsLine{line1, line2}
+func TestHostsHasEntryDoesntFindMissingEntry(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
+
+	result, _ := hosts.HasEntry("10.0.0.7", "brada")
+	if result {
+		t.Error("Found missing entry.")
+	}
+}
+
+func TestHostsAddEntryWhenIpHasOtherHosts(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
+
+	hosts.AddEntry("10.0.0.7", "brada")
+
+	expectedLines := []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada brada")}
+
+	if !reflect.DeepEqual(hosts.Lines, expectedLines) {
+		t.Error("Add entry failed to append entry.")
+	}
+}
+
+func TestHostsAddEntryWhenIpDoesntExist(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda")}
+
+	hosts.AddEntry("10.0.0.7", "brada")
+
+	expectedLines := []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 brada")}
+
+	if !reflect.DeepEqual(hosts.Lines, expectedLines) {
+		t.Error("Add entry failed to append entry.")
+	}
+}
+
+func TestHostsRemoveEntryWhenLastHostIpCombo(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
 
 	hosts.RemoveEntry("10.0.0.7", "nada")
-	if len(hosts.Lines) > 1 {
+
+	expectedLines := []HostsLine{NewHostsLine("127.0.0.1 yadda")}
+
+	if !reflect.DeepEqual(hosts.Lines, expectedLines) {
+		t.Error("Remove entry failed to remove entry.")
+	}
+}
+
+func TestHostsRemoveEntryWhenIpHasOtherHosts(t *testing.T) {
+	hosts := new(Hosts)
+
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada brada")}
+
+	hosts.RemoveEntry("10.0.0.7", "nada")
+
+	expectedLines := []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 brada")}
+
+	if !reflect.DeepEqual(hosts.Lines, expectedLines) {
 		t.Error("Remove entry failed to remove entry.")
 	}
 }
