@@ -20,7 +20,7 @@ $ export PATH=$(pwd):$PATH
 $ goodhosts --help
 ```
 
-### List entries.
+### List entries
 
 ```bash
 $ goodhosts list
@@ -31,25 +31,25 @@ $ goodhosts list
 
 Add ```--all``` flag to include comments.
 
-### Check for an entry.
+### Check for an entry
 
 ```bash
 $ goodhosts check 127.0.0.1 facebook
 ```
 
-### Add an entry.
+### Add an entry
 
 ```bash
 $ goodhosts add 127.0.0.1 facebook
 ```
 
-### Remove an entry.
+### Remove an entry
 
 ```bash
 $ goodhosts remove 127.0.0.1 facebook
 ```
 
-### More.
+### More
 
 ```bash
 $ goodhosts --help
@@ -63,7 +63,7 @@ $ goodhosts --help
 $ go get github.com/lextoumbourou/goodhosts
 ```
 
-### List entries.
+### List entries
 
 ```go
 package main
@@ -82,7 +82,7 @@ func main() {
 }
 ```
 
-### Check for an entry.
+### Check for an entry
 
 ```go
 package main
@@ -103,7 +103,7 @@ func main() {
 }
 ```
 
-### Add an entry.
+### Add an entry
 
 ```go
 package main
@@ -125,7 +125,7 @@ func main() {
 }
 ```
 
-### Remove an entry.
+### Remove an entry
 
 ```go
 package main
