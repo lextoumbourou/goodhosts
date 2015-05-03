@@ -42,10 +42,8 @@ func main() {
 
 			ip := os.Args[2]
 			host := os.Args[3]
-			hasEntry, err := hosts.HasEntry(ip, host)
-			check(err)
 
-			if !hasEntry {
+			if !hosts.HasEntry(ip, host) {
 				fmt.Fprintf(os.Stderr, "%s %s is not in the hosts file\n", ip, host)
 				os.Exit(1)
 			}
@@ -60,10 +58,7 @@ func main() {
 
 			ip := os.Args[2]
 			host := os.Args[3]
-			hasEntry, err := hosts.HasEntry(ip, host)
-			check(err)
-
-			if hasEntry {
+			if hosts.HasEntry(ip, host) {
 				fmt.Fprintf(os.Stderr, "Line already in host file. Nothing to do.\n")
 				os.Exit(2)
 			}
@@ -89,10 +84,8 @@ func main() {
 
 			ip := os.Args[2]
 			host := os.Args[3]
-			hasEntry, err := hosts.HasEntry(ip, host)
-			check(err)
 
-			if !hasEntry {
+			if !hosts.HasEntry(ip, host) {
 				fmt.Fprintf(os.Stderr, "Line not in host file. Nothing to do.\n")
 				os.Exit(3)
 			}

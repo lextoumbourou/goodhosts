@@ -106,10 +106,10 @@ func (h *Hosts) AddEntry(ip string, host string) {
 }
 
 // Return a bool if ip/host combo in hosts file.
-func (h Hosts) HasEntry(ip string, host string) (bool, error) {
-	pos, err := h.getHostPosition(ip, host)
+func (h Hosts) HasEntry(ip string, host string) bool {
+	pos := h.getHostPosition(ip, host)
 
-	return pos != -1, err
+	return pos != -1
 }
 
 // Remove an entry from the hosts file.
@@ -140,17 +140,17 @@ func (h *Hosts) RemoveEntry(ip string, host string) error {
 	return nil
 }
 
-func (h Hosts) getHostPosition(ip string, host string) (int, error) {
+func (h Hosts) getHostPosition(ip string, host string) int {
 	for i := range h.Lines {
 		line := h.Lines[i]
 		if !line.IsComment() && line.Raw != "" {
 			if ip == line.Ip && itemInSlice(host, line.Hosts) {
-				return i, nil
+				return i
 			}
 		}
 	}
 
-	return -1, nil
+	return -1
 }
 
 func (h Hosts) getIpPosition(ip string) int {
