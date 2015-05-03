@@ -3,4 +3,4 @@
 3. <del>Add docs on API.</del>
 4. More tests.
 5. Support adding and removing multiple hosts.
-6. Move ``Load()`` method to constructor.
+6. <del>Move ``Load()`` method to constructor.</del>
