@@ -9,6 +9,17 @@ Simple [hosts file](http://en.wikipedia.org/wiki/Hosts_%28file%29) management in
 
 ## Command-Line Usage
 
+### Installation
+
+Download the [binary](http://github.com/lextoumbourou/goodhosts/releases/latest) and put it in your path.
+
+```bash
+$ wget https://github.com/lextoumbourou/goodhosts/releases/download/v1.0.0/goodhosts
+$ chmod +x goodhosts
+$ export PATH=$(pwd):$PATH
+$ goodhosts --help
+```
+
 ### List entries.
 
 ```bash
@@ -36,7 +47,19 @@ $ goodhosts add 127.0.0.1 facebook
 $ goodhosts remove 127.0.0.1 facebook
 ```
 
+### More.
+
+```bash
+$ goodhosts --help
+```
+
 ## API Usage
+
+### Installation
+
+```bash
+$ go get github.com/lextoumbourou/goodhosts
+```
 
 ### List entries.
 
@@ -49,9 +72,9 @@ import (
 )
 
 func main() {
-    h := hosts.NewHosts()
+    h := goodhosts.NewHosts()
     for _, line := range hosts.Lines {
-        fmt.Printf(line.Raw)
+        fmt.Println(line.Raw)
     }
 }
 ```
@@ -67,9 +90,12 @@ import (
 )
 
 func main() {
-    h := hosts.NewHosts()
+    h := goodhosts.NewHosts()
+
     if h.HasEntry("127.0.0.1", "facebook") {
         fmt.Println("Entry exists!")
+    } else {
+        fmt.Println("Entry doesn't exist!")
     }
 }
 ```
@@ -85,7 +111,7 @@ import (
 )
 
 func main() {
-    h := hosts.NewHosts()
+    h := goodhosts.NewHosts()
 
     // Note that nothing will be added to the hosts file until ``Flush`` is called.
     h.AddEntry("127.0.0.1", "facebook.com")
@@ -107,7 +133,7 @@ import (
 )
 
 func main() {
-    h := hosts.NewHosts()
+    h := goodhosts.NewHosts()
 
     // Same deal, yo: call h.Flush() to make permanent.
     h.RemoveEntry("127.0.0.1", "facebook")
@@ -118,7 +144,7 @@ func main() {
 }
 ```
 
-### [API Docs](API.md)
+### [More](API.md)
 
 ## Changelog
 
@@ -129,3 +155,5 @@ func main() {
 ## License
 
 [MIT](LICENSE)
+
+<img src="http://static.messynessychic.com/wp-content/uploads/2013/08/rothschildparty2.jpg" width=400><br>
