@@ -47,7 +47,8 @@ Return a bool if ip/host combo in hosts file.
 ```go
 func (h *Hosts) Load() error
 ```
-Load the hosts file into ``l.Lines``.
+Load the hosts file into ``l.Lines``. ``Load() is called by ``NewHosts`` and
+``Flush`` so you generally you won't need to call this yourself.
 
 #### func (*Hosts) RemoveEntry
 

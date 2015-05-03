@@ -23,9 +23,6 @@ func main() {
 			// To do: make this a flag
 			hideComments := true
 
-			err := hosts.Load()
-			check(err)
-
 			for _, line := range hosts.Lines {
 				if line.IsComment() && hideComments {
 					continue
@@ -42,9 +39,6 @@ func main() {
 				fmt.Println("usage: goodhosts check 127.0.0.1 facebook.com")
 				os.Exit(1)
 			}
-
-			err := hosts.Load()
-			check(err)
 
 			ip := os.Args[2]
 			host := os.Args[3]
@@ -64,9 +58,6 @@ func main() {
 			user, err := user.Current()
 			check(err)
 
-			err = hosts.Load()
-			check(err)
-
 			ip := os.Args[2]
 			host := os.Args[3]
 			hasEntry, err := hosts.HasEntry(ip, host)
@@ -84,7 +75,9 @@ func main() {
 
 			hosts.AddEntry(ip, host)
 
-			hosts.Flush()
+			err = hosts.Flush()
+			check(err)
+
 			return
 		case "remove":
 			if len(os.Args) < 3 {
@@ -92,9 +85,6 @@ func main() {
 				os.Exit(1)
 			}
 			user, err := user.Current()
-			check(err)
-
-			err = hosts.Load()
 			check(err)
 
 			ip := os.Args[2]
@@ -115,7 +105,9 @@ func main() {
 			err = hosts.RemoveEntry(ip, host)
 			check(err)
 
-			hosts.Flush()
+			err = hosts.Flush()
+			check(err)
+
 			return
 		}
 	}

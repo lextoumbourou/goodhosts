@@ -38,6 +38,8 @@ type Hosts struct {
 }
 
 // Load the hosts file into ``l.Lines``.
+// ``Load() is called by ``NewHosts`` and ``Flush`` so you
+// generally you won't need to call this yourself.
 func (h *Hosts) Load() error {
 	var lines []HostsLine
 
@@ -79,7 +81,12 @@ func (h Hosts) Flush() error {
 		fmt.Fprintln(w, line.Raw)
 	}
 
-	return w.Flush()
+	err = w.Flush()
+	if err != nil {
+		return err
+	}
+
+	return h.Load()
 }
 
 // Add an entry to the hosts file.
@@ -161,6 +168,8 @@ func NewHosts() Hosts {
 	// To do: add Windows support.
 	path := "/etc/hosts"
 	host := Hosts{Path: path}
+
+	host.Load()
 
 	return host
 }
