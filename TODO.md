@@ -4,6 +4,6 @@
 4. <del>More tests.</del>
 5. Support adding and removing multiple hosts.
 6. <del>Move ``Load()`` method to constructor.</del>
-7. Add ```--all``` flag to ``list`` command.
-8. Add ``--help`` output.
+7. <del>Add ```--all``` flag to ``list`` command.</del>
+8. <del>Add ``--help`` output.</del>
 9. Test IP address format.

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/lextoumbourou/goodhosts"
 	"os"
@@ -14,17 +15,21 @@ func check(err error) {
 }
 
 func main() {
-	if len(os.Args) > 1 {
-		command := os.Args[1]
+	showComments := flag.Bool("all", false, "Show comments when listing.")
+
+	flag.Parse()
+
+	args := flag.Args()
+
+	if len(args) > 0 {
+		command := args[0]
 		hosts := goodhosts.NewHosts()
 
 		switch command {
 		case "list":
-			// To do: make this a flag
-			hideComments := true
 
 			for _, line := range hosts.Lines {
-				if line.IsComment() && hideComments {
+				if line.IsComment() && !*showComments {
 					continue
 				}
 
@@ -105,5 +110,6 @@ func main() {
 		}
 	}
 
-	fmt.Println("Help should go here.")
+	fmt.Println("Add --help for usage.")
+	os.Exit(2)
 }

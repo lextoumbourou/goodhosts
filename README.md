@@ -29,6 +29,8 @@ $ goodhosts list
 10.0.0.6 my-desktop
 ```
 
+Add ```--all``` flag to include comments.
+
 ### Check for an entry.
 
 ```bash
