@@ -73,7 +73,8 @@ import (
 
 func main() {
     h := goodhosts.NewHosts()
-    for _, line := range hosts.Lines {
+
+    for _, line := range h.Lines {
         fmt.Println(line.Raw)
     }
 }
