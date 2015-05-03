@@ -27,15 +27,24 @@ func main() {
 
 		switch command {
 		case "list":
+			total := 0
 			for _, line := range hosts.Lines {
+				var lineOutput string
+
 				if line.IsComment() && !*showComments {
 					continue
 				}
 
-				fmt.Printf("%s\n", line.Raw)
+				lineOutput = fmt.Sprintf("%s", line.Raw)
+				if line.Err != nil {
+					lineOutput = fmt.Sprintf("%s # <<< Malformated!", lineOutput)
+				}
+				total += 1
+
+				fmt.Println(lineOutput)
 			}
 
-			fmt.Printf("\nTotal: %d\n", len(hosts.Lines))
+			fmt.Printf("\nTotal: %d\n", total)
 
 			return
 		case "check":
