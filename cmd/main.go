@@ -27,7 +27,6 @@ func main() {
 
 		switch command {
 		case "list":
-
 			for _, line := range hosts.Lines {
 				if line.IsComment() && !*showComments {
 					continue
@@ -52,6 +51,7 @@ func main() {
 				fmt.Fprintf(os.Stderr, "%s %s is not in the hosts file\n", ip, host)
 				os.Exit(1)
 			}
+
 			return
 		case "add":
 			if len(os.Args) < 3 {
