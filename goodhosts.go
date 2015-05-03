@@ -9,6 +9,7 @@ import (
 
 const commentChar string = "#"
 
+// Represents a single line in the hosts file.
 type HostsLine struct {
 	Ip    string
 	Hosts []string
@@ -22,7 +23,7 @@ func (l HostsLine) IsComment() bool {
 	return isComment
 }
 
-// Create a new instance of ```HostsLine```.
+// Return a new instance of ```HostsLine```.
 func NewHostsLine(raw string) HostsLine {
 	fields := strings.Fields(raw)
 	if len(fields) == 0 {
@@ -32,13 +33,14 @@ func NewHostsLine(raw string) HostsLine {
 	return HostsLine{Ip: fields[0], Hosts: fields[1:], Raw: raw}
 }
 
+// Represents a hosts file.
 type Hosts struct {
 	Path  string
 	Lines []HostsLine
 }
 
-// Load the hosts file into ``l.Lines``.
-// ``Load() is called by ``NewHosts`` and ``Flush`` so you
+// Load the hosts file into ```l.Lines```.
+// ```Load()``` is called by ```NewHosts()``` and ```Hosts.Flush()``` so you
 // generally you won't need to call this yourself.
 func (h *Hosts) Load() error {
 	var lines []HostsLine
@@ -164,6 +166,7 @@ func (h Hosts) getIpPosition(ip string) int {
 	return -1
 }
 
+// Return a new instance of ``Hosts``.
 func NewHosts() Hosts {
 	// To do: add Windows support.
 	path := "/etc/hosts"

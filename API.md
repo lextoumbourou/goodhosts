@@ -14,12 +14,14 @@ type Hosts struct {
 }
 ```
 
+Represents a hosts file.
 
 #### func  NewHosts
 
 ```go
 func NewHosts() Hosts
 ```
+Return a new instance of ``Hosts``.
 
 #### func (*Hosts) AddEntry
 
@@ -47,8 +49,9 @@ Return a bool if ip/host combo in hosts file.
 ```go
 func (h *Hosts) Load() error
 ```
-Load the hosts file into ``l.Lines``. ``Load() is called by ``NewHosts`` and
-``Flush`` so you generally you won't need to call this yourself.
+Load the hosts file into ```l.Lines```. ```Load()``` is called by
+```NewHosts()``` and ```Hosts.Flush()``` so you generally you won't need to call
+this yourself.
 
 #### func (*Hosts) RemoveEntry
 
@@ -67,13 +70,14 @@ type HostsLine struct {
 }
 ```
 
+Represents a single line in the hosts file.
 
 #### func  NewHostsLine
 
 ```go
 func NewHostsLine(raw string) HostsLine
 ```
-Create a new instance of ```HostsLine```.
+Return a new instance of ```HostsLine```.
 
 #### func (HostsLine) IsComment
 
