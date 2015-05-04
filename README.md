@@ -43,10 +43,22 @@ $ goodhosts check 127.0.0.1 facebook
 $ goodhosts add 127.0.0.1 facebook
 ```
 
+Or *entries*.
+
+```bash
+$ goodhosts add 127.0.0.1 facebook twitter gmail
+```
+
 ### Remove an entry
 
 ```bash
 $ goodhosts remove 127.0.0.1 facebook
+```
+
+Or *entries*.
+
+```bash
+$ goodhosts remove 127.0.0.1 facebook twitter gmail
 ```
 
 ### More

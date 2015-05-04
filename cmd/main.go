@@ -71,18 +71,14 @@ func main() {
 			check(err)
 
 			ip := os.Args[2]
-			host := os.Args[3]
-			if hosts.HasEntry(ip, host) {
-				fmt.Fprintf(os.Stderr, "Line already in host file. Nothing to do.\n")
-				os.Exit(2)
-			}
+			inputHosts := os.Args[3:]
 
 			if user == nil || user.Uid != "0" {
 				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
 				os.Exit(1)
 			}
 
-			hosts.AddEntry(ip, host)
+			hosts.AddEntry(ip, inputHosts...)
 
 			err = hosts.Flush()
 			check(err)
@@ -97,19 +93,14 @@ func main() {
 			check(err)
 
 			ip := os.Args[2]
-			host := os.Args[3]
-
-			if !hosts.HasEntry(ip, host) {
-				fmt.Fprintf(os.Stderr, "Line not in host file. Nothing to do.\n")
-				os.Exit(3)
-			}
+			inputHosts := os.Args[3:]
 
 			if user == nil || user.Uid != "0" {
 				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
 				os.Exit(1)
 			}
 
-			hosts.RemoveEntry(ip, host)
+			hosts.RemoveEntry(ip, inputHosts...)
 
 			err = hosts.Flush()
 			check(err)
