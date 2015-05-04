@@ -107,7 +107,6 @@ func (h Hosts) Flush() error {
 
 // Add an entry to the hosts file.
 func (h *Hosts) AddEntry(ip string, hosts ...string) {
-
 	position := h.getIpPosition(ip)
 	if position == -1 {
 		endLine := NewHostsLine(buildRawLine(ip, hosts))
@@ -115,7 +114,15 @@ func (h *Hosts) AddEntry(ip string, hosts ...string) {
 		h.Lines = append(h.Lines, endLine)
 	} else {
 		// Otherwise, we replace the line in the correct position
-		endLine := NewHostsLine(buildRawLine(h.Lines[position].Raw, hosts))
+		newHosts := h.Lines[position].Hosts
+		for _, addHost := range hosts {
+			if itemInSlice(addHost, newHosts) {
+				continue
+			}
+
+			newHosts = append(newHosts, addHost)
+		}
+		endLine := NewHostsLine(buildRawLine(ip, newHosts))
 		h.Lines[position] = endLine
 	}
 }

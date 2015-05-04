@@ -51,12 +51,12 @@ func TestHostsHasEntryDoesntFindMissingEntry(t *testing.T) {
 func TestHostsAddEntryWhenIpHasOtherHosts(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
-		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada yadda")}
 
-	hosts.AddEntry("10.0.0.7", "brada")
+	hosts.AddEntry("10.0.0.7", "brada", "yadda")
 
 	expectedLines := []HostsLine{
-		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada brada")}
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada yadda brada")}
 
 	if !reflect.DeepEqual(hosts.Lines, expectedLines) {
 		t.Error("Add entry failed to append entry.")
@@ -68,24 +68,13 @@ func TestHostsAddEntryWhenIpDoesntExist(t *testing.T) {
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda")}
 
-	hosts.AddEntry("10.0.0.7", "brada")
+	hosts.AddEntry("10.0.0.7", "brada", "yadda")
 
 	expectedLines := []HostsLine{
-		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 brada")}
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 brada yadda")}
 
 	if !reflect.DeepEqual(hosts.Lines, expectedLines) {
 		t.Error("Add entry failed to append entry.")
-	}
-}
-
-func TestHostsAddMultipleEntries(t *testing.T) {
-	hosts := new(Hosts)
-	hosts.Lines = []HostsLine{
-		NewHostsLine("127.0.0.1 yadda")}
-
-	hosts.AddEntry("127.0.0.1", "brada", "prada", "nada")
-	if hosts.Lines[0].Raw != "127.0.0.1 yadda brada prada nada" {
-		t.Error("Failed to add multiple entries.")
 	}
 }
 
