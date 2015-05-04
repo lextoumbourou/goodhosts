@@ -7,3 +7,5 @@
 7. <del>Add ```--all``` flag to ``list`` command.</del>
 8. <del>Add ``--help`` output.</del>
 9. <del>Test IP address format.</del>
+10. Better ```--help```.
+11. Ensure a maximum number of hosts per line when performing a ```Flush()```.
