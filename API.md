@@ -23,10 +23,10 @@ func NewHosts() Hosts
 ```
 Return a new instance of ``Hosts``.
 
-#### func (*Hosts) AddEntry
+#### func (*Hosts) Add
 
 ```go
-func (h *Hosts) AddEntry(ip string, host string)
+func (h *Hosts) Add(ip string, hosts ...string) error
 ```
 Add an entry to the hosts file.
 
@@ -37,10 +37,10 @@ func (h Hosts) Flush() error
 ```
 Flush any changes made to hosts file.
 
-#### func (Hosts) HasEntry
+#### func (Hosts) Has
 
 ```go
-func (h Hosts) HasEntry(ip string, host string) (bool, error)
+func (h Hosts) Has(ip string, host string) bool
 ```
 Return a bool if ip/host combo in hosts file.
 
@@ -53,10 +53,10 @@ Load the hosts file into ```l.Lines```. ```Load()``` is called by
 ```NewHosts()``` and ```Hosts.Flush()``` so you generally you won't need to call
 this yourself.
 
-#### func (*Hosts) RemoveEntry
+#### func (*Hosts) Remove
 
 ```go
-func (h *Hosts) RemoveEntry(ip string, host string) error
+func (h *Hosts) Remove(ip string, hosts ...string) error
 ```
 Remove an entry from the hosts file.
 
@@ -64,9 +64,10 @@ Remove an entry from the hosts file.
 
 ```go
 type HostsLine struct {
-	Ip    string
+	IP    string
 	Hosts []string
 	Raw   string
+	Err   error
 }
 ```
 
