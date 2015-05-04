@@ -107,11 +107,12 @@ import (
 func main() {
     h := goodhosts.NewHosts()
 
-    if h.HasEntry("127.0.0.1", "facebook") {
+    if h.Has("127.0.0.1", "facebook") {
         fmt.Println("Entry exists!")
-    } else {
-        fmt.Println("Entry doesn't exist!")
+        return
     }
+
+    fmt.Println("Entry doesn't exist!")
 }
 ```
 
@@ -129,7 +130,7 @@ func main() {
     h := goodhosts.NewHosts()
 
     // Note that nothing will be added to the hosts file until ``Flush`` is called.
-    h.AddEntry("127.0.0.1", "facebook.com")
+    h.Add("127.0.0.1", "facebook.com", "twitter")
 
     if err := h.Flush(); err != nil {
         panic(err)
@@ -151,7 +152,7 @@ func main() {
     h := goodhosts.NewHosts()
 
     // Same deal, yo: call h.Flush() to make permanent.
-    h.RemoveEntry("127.0.0.1", "facebook")
+    h.Remove("127.0.0.1", "facebook", "twitter")
 
     if err := h.Flush(); err != nil {
         panic(err)
@@ -162,6 +163,13 @@ func main() {
 ### [More](API.md)
 
 ## Changelog
+
+### 2.0.0 (2015-05-04)
+
+* Breaking API change.
+* Add support for adding and removing multiple hosts.
+* Added ``--all`` flag.
+* Handle malformed IP addresses.
 
 ### 1.0.0 (2015-05-03)
 
