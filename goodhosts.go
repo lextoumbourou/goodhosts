@@ -106,7 +106,11 @@ func (h Hosts) Flush() error {
 }
 
 // Add an entry to the hosts file.
-func (h *Hosts) AddEntry(ip string, hosts ...string) {
+func (h *Hosts) Add(ip string, hosts ...string) error {
+	if net.ParseIP(ip) == nil {
+		return errors.New(fmt.Sprintf("%q is an invalid IP address.", ip))
+	}
+
 	position := h.getIpPosition(ip)
 	if position == -1 {
 		endLine := NewHostsLine(buildRawLine(ip, hosts))
@@ -125,18 +129,24 @@ func (h *Hosts) AddEntry(ip string, hosts ...string) {
 		endLine := NewHostsLine(buildRawLine(ip, newHosts))
 		h.Lines[position] = endLine
 	}
+
+	return nil
 }
 
 // Return a bool if ip/host combo in hosts file.
-func (h Hosts) HasEntry(ip string, host string) bool {
+func (h Hosts) Has(ip string, host string) bool {
 	pos := h.getHostPosition(ip, host)
 
 	return pos != -1
 }
 
 // Remove an entry from the hosts file.
-func (h *Hosts) RemoveEntry(ip string, hosts ...string) {
+func (h *Hosts) Remove(ip string, hosts ...string) error {
 	var outputLines []HostsLine
+
+	if net.ParseIP(ip) == nil {
+		return errors.New(fmt.Sprintf("%q is an invalid IP address.", ip))
+	}
 
 	for _, line := range h.Lines {
 
@@ -166,6 +176,7 @@ func (h *Hosts) RemoveEntry(ip string, hosts ...string) {
 	}
 
 	h.Lines = outputLines
+	return nil
 }
 
 func (h Hosts) getHostPosition(ip string, host string) int {

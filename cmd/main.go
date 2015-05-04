@@ -56,7 +56,7 @@ func main() {
 			ip := os.Args[2]
 			host := os.Args[3]
 
-			if !hosts.HasEntry(ip, host) {
+			if !hosts.Has(ip, host) {
 				fmt.Fprintf(os.Stderr, "%s %s is not in the hosts file\n", ip, host)
 				os.Exit(1)
 			}
@@ -78,7 +78,11 @@ func main() {
 				os.Exit(1)
 			}
 
-			hosts.AddEntry(ip, inputHosts...)
+			err = hosts.Add(ip, inputHosts...)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, fmt.Sprintf("%s\n", err.Error()))
+				os.Exit(2)
+			}
 
 			err = hosts.Flush()
 			check(err)
@@ -100,7 +104,11 @@ func main() {
 				os.Exit(1)
 			}
 
-			hosts.RemoveEntry(ip, inputHosts...)
+			err = hosts.Remove(ip, inputHosts...)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, fmt.Sprintf("%s\n", err.Error()))
+				os.Exit(2)
+			}
 
 			err = hosts.Flush()
 			check(err)

@@ -22,38 +22,38 @@ func TestNewHostsLineWithEmptyLine(t *testing.T) {
 	}
 }
 
-func TestHostsHasEntry(t *testing.T) {
+func TestHostsHas(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
 
 	// We should find this entry.
-	if !hosts.HasEntry("10.0.0.7", "nada") {
+	if !hosts.Has("10.0.0.7", "nada") {
 		t.Error("Couldn't find entry in hosts file.")
 	}
 
 	// We shouldn't find this entry
-	if hosts.HasEntry("10.0.0.7", "shuda") {
+	if hosts.Has("10.0.0.7", "shuda") {
 		t.Error("Found entry that isn't in hosts file.")
 	}
 }
 
-func TestHostsHasEntryDoesntFindMissingEntry(t *testing.T) {
+func TestHostsHasDoesntFindMissingEntry(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
 
-	if hosts.HasEntry("10.0.0.7", "brada") {
+	if hosts.Has("10.0.0.7", "brada") {
 		t.Error("Found missing entry.")
 	}
 }
 
-func TestHostsAddEntryWhenIpHasOtherHosts(t *testing.T) {
+func TestHostsAddWhenIpHasOtherHosts(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada yadda")}
 
-	hosts.AddEntry("10.0.0.7", "brada", "yadda")
+	hosts.Add("10.0.0.7", "brada", "yadda")
 
 	expectedLines := []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada yadda brada")}
@@ -63,12 +63,12 @@ func TestHostsAddEntryWhenIpHasOtherHosts(t *testing.T) {
 	}
 }
 
-func TestHostsAddEntryWhenIpDoesntExist(t *testing.T) {
+func TestHostsAddWhenIpDoesntExist(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda")}
 
-	hosts.AddEntry("10.0.0.7", "brada", "yadda")
+	hosts.Add("10.0.0.7", "brada", "yadda")
 
 	expectedLines := []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 brada yadda")}
@@ -78,12 +78,12 @@ func TestHostsAddEntryWhenIpDoesntExist(t *testing.T) {
 	}
 }
 
-func TestHostsRemoveEntryWhenLastHostIpCombo(t *testing.T) {
+func TestHostsRemoveWhenLastHostIpCombo(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
 
-	hosts.RemoveEntry("10.0.0.7", "nada")
+	hosts.Remove("10.0.0.7", "nada")
 
 	expectedLines := []HostsLine{NewHostsLine("127.0.0.1 yadda")}
 
@@ -92,13 +92,13 @@ func TestHostsRemoveEntryWhenLastHostIpCombo(t *testing.T) {
 	}
 }
 
-func TestHostsRemoveEntryWhenIpHasOtherHosts(t *testing.T) {
+func TestHostsRemoveWhenIpHasOtherHosts(t *testing.T) {
 	hosts := new(Hosts)
 
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada brada")}
 
-	hosts.RemoveEntry("10.0.0.7", "nada")
+	hosts.Remove("10.0.0.7", "nada")
 
 	expectedLines := []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 brada")}
@@ -113,7 +113,7 @@ func TestHostsRemoveMultipleEntries(t *testing.T) {
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda nadda prada")}
 
-	hosts.RemoveEntry("127.0.0.1", "yadda", "prada")
+	hosts.Remove("127.0.0.1", "yadda", "prada")
 	if hosts.Lines[0].Raw != "127.0.0.1 nadda" {
 		t.Error("Failed to remove multiple entries.")
 	}
