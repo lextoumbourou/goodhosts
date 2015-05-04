@@ -14,7 +14,7 @@ Simple [hosts file](http://en.wikipedia.org/wiki/Hosts_%28file%29) management in
 Download the [binary](http://github.com/lextoumbourou/goodhosts/releases/latest) and put it in your path.
 
 ```bash
-$ wget https://github.com/lextoumbourou/goodhosts/releases/download/v1.0.0/goodhosts
+$ wget https://github.com/lextoumbourou/goodhosts/releases/download/v2.0.0/goodhosts
 $ chmod +x goodhosts
 $ export PATH=$(pwd):$PATH
 $ goodhosts --help
