@@ -22,12 +22,19 @@ func TestNewHostsLineWithEmptyLine(t *testing.T) {
 	}
 }
 
-func TestHostsHasEntryFindsEntry(t *testing.T) {
+func TestHostsHasEntry(t *testing.T) {
 	hosts := new(Hosts)
 	hosts.Lines = []HostsLine{
 		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
+
+	// We should find this entry.
 	if !hosts.HasEntry("10.0.0.7", "nada") {
-		t.Error("Failed to find entry.")
+		t.Error("Couldn't find entry in hosts file.")
+	}
+
+	// We shouldn't find this entry
+	if hosts.HasEntry("10.0.0.7", "shuda") {
+		t.Error("Found entry that isn't in hosts file.")
 	}
 }
 
