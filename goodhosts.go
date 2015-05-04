@@ -128,31 +128,37 @@ func (h Hosts) HasEntry(ip string, host string) bool {
 }
 
 // Remove an entry from the hosts file.
-func (h *Hosts) RemoveEntry(ip string, host string) error {
-	pos := h.getIpPosition(ip)
-	line := h.Lines[pos]
+func (h *Hosts) RemoveEntry(ip string, hosts ...string) {
+	var outputLines []HostsLine
 
-	hostPos := -1
-	for i := range line.Hosts {
-		if line.Hosts[i] == host {
-			hostPos = i
+	for _, line := range h.Lines {
+
+		// Bad lines or comments just get readded.
+		if line.Err != nil || line.IsComment() || line.IP != ip {
+			outputLines = append(outputLines, line)
+			continue
+		}
+
+		var newHosts []string
+		for _, checkHost := range line.Hosts {
+			if !itemInSlice(checkHost, hosts) {
+				newHosts = append(newHosts, checkHost)
+			}
+		}
+
+		// If hosts is empty, skip the line completely.
+		if len(newHosts) > 0 {
+			newLineRaw := line.IP
+
+			for _, host := range newHosts {
+				newLineRaw = fmt.Sprintf("%s %s", newLineRaw, host)
+			}
+			newLine := NewHostsLine(newLineRaw)
+			outputLines = append(outputLines, newLine)
 		}
 	}
 
-	newHosts := append(line.Hosts[:hostPos], line.Hosts[hostPos+1:]...)
-	if len(newHosts) == 0 {
-		// Just remove the line if there's no new hosts.
-		h.Lines = append(h.Lines[:pos], h.Lines[pos+1:]...)
-	} else {
-		newLineRaw := line.IP
-		for i := range newHosts {
-			newLineRaw = fmt.Sprintf("%s %s", newLineRaw, newHosts[i])
-		}
-		newLine := NewHostsLine(newLineRaw)
-		h.Lines[pos] = newLine
-	}
-
-	return nil
+	h.Lines = outputLines
 }
 
 func (h Hosts) getHostPosition(ip string, host string) int {

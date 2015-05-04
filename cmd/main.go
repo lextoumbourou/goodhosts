@@ -109,8 +109,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			err = hosts.RemoveEntry(ip, host)
-			check(err)
+			hosts.RemoveEntry(ip, host)
 
 			err = hosts.Flush()
 			check(err)

@@ -111,3 +111,14 @@ func TestHostsRemoveEntryWhenIpHasOtherHosts(t *testing.T) {
 		t.Error("Remove entry failed to remove entry.")
 	}
 }
+
+func TestHostsRemoveMultipleEntries(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda nadda prada")}
+
+	hosts.RemoveEntry("127.0.0.1", "yadda", "prada")
+	if hosts.Lines[0].Raw != "127.0.0.1 nadda" {
+		t.Error("Failed to remove multiple entries.")
+	}
+}
