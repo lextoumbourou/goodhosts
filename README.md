@@ -129,10 +129,10 @@ import (
 func main() {
     hosts := goodhosts.NewHosts()
 
-    // Note that nothing will be added to the hosts file until ``Flush`` is called.
+    // Note that nothing will be added to the hosts file until ``hosts.Flush`` is called.
     hosts.Add("127.0.0.1", "facebook.com", "twitter")
 
-    if err := h.Flush(); err != nil {
+    if err := hosts.Flush(); err != nil {
         panic(err)
     }
 }
@@ -151,10 +151,10 @@ import (
 func main() {
     hosts := goodhosts.NewHosts()
 
-    // Same deal, yo: call h.Flush() to make permanent.
+    // Same deal, yo: call hosts.Flush() to make permanent.
     hosts.Remove("127.0.0.1", "facebook", "twitter")
 
-    if err := h.Flush(); err != nil {
+    if err := hosts.Flush(); err != nil {
         panic(err)
     }
 }
