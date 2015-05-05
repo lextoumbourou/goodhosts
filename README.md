@@ -86,9 +86,9 @@ import (
 )
 
 func main() {
-    h := goodhosts.NewHosts()
+    hosts := goodhosts.NewHosts()
 
-    for _, line := range h.Lines {
+    for _, line := range hosts.Lines {
         fmt.Println(line.Raw)
     }
 }
@@ -105,9 +105,9 @@ import (
 )
 
 func main() {
-    h := goodhosts.NewHosts()
+    hosts := goodhosts.NewHosts()
 
-    if h.Has("127.0.0.1", "facebook") {
+    if hosts.Has("127.0.0.1", "facebook") {
         fmt.Println("Entry exists!")
         return
     }
@@ -127,10 +127,10 @@ import (
 )
 
 func main() {
-    h := goodhosts.NewHosts()
+    hosts := goodhosts.NewHosts()
 
     // Note that nothing will be added to the hosts file until ``Flush`` is called.
-    h.Add("127.0.0.1", "facebook.com", "twitter")
+    hosts.Add("127.0.0.1", "facebook.com", "twitter")
 
     if err := h.Flush(); err != nil {
         panic(err)
@@ -149,10 +149,10 @@ import (
 )
 
 func main() {
-    h := goodhosts.NewHosts()
+    hosts := goodhosts.NewHosts()
 
     // Same deal, yo: call h.Flush() to make permanent.
-    h.Remove("127.0.0.1", "facebook", "twitter")
+    hosts.Remove("127.0.0.1", "facebook", "twitter")
 
     if err := h.Flush(); err != nil {
         panic(err)
