@@ -29,7 +29,7 @@ $ goodhosts --help
 
 #### Windows
 
-Download the [binary][https://github.com/lextoumbourou/goodhosts/releases/download/v2.1.0/goodhosts-windows] and do Windowsy stuff with it (doc PR welcome welcome).
+Download the [binary](https://github.com/lextoumbourou/goodhosts/releases/download/v2.1.0/goodhosts-windows) and do Windowsy stuff with it (doc PR welcome welcome).
 
 
 ### List entries
