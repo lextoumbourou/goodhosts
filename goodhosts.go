@@ -105,7 +105,7 @@ func (h Hosts) Flush() error {
 	w := bufio.NewWriter(file)
 
 	for _, line := range h.Lines {
-		fmt.Fprintf(w, "%s%s", line.Raw, EOL)
+		fmt.Fprintf(w, "%s%s", line.Raw, eol)
 	}
 
 	err = w.Flush()
@@ -218,7 +218,7 @@ func (h Hosts) getIpPosition(ip string) int {
 
 // Return a new instance of ``Hosts``.
 func NewHosts() (Hosts, error) {
-	osHostsFilePath := os.ExpandEnv(filepath.FromSlash(HostsFilePath))
+	osHostsFilePath := os.ExpandEnv(filepath.FromSlash(hostsFilePath))
 
 	hosts := Hosts{Path: osHostsFilePath}
 

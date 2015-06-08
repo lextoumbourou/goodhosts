@@ -5,22 +5,6 @@
 
 ## Usage
 
-```go
-const EOL = "\n"
-```
-
-```go
-const EOL = "\r\n"
-```
-
-```go
-const HostsFilePath = "/etc/hosts"
-```
-
-```go
-const HostsFilePath = "${SystemRoot}/System32/drivers/etc/hosts"
-```
-
 #### type Hosts
 
 ```go

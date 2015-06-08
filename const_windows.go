@@ -1,4 +1,4 @@
 package goodhosts
 
-const HostsFilePath = "${SystemRoot}/System32/drivers/etc/hosts"
-const EOL = "\r\n"
+const hostsFilePath = "${SystemRoot}/System32/drivers/etc/hosts"
+const eol = "\r\n"
