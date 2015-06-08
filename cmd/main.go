@@ -72,7 +72,7 @@ func main() {
 			inputHosts := os.Args[3:]
 
 			if !hosts.IsWritable() {
-				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges?")
+				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges.")
 				os.Exit(1)
 			}
 
@@ -96,7 +96,7 @@ func main() {
 			inputHosts := os.Args[3:]
 
 			if !hosts.IsWritable() {
-				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges?")
+				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges.")
 				os.Exit(1)
 			}
 
