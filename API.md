@@ -5,6 +5,22 @@
 
 ## Usage
 
+```go
+const EOL = "\n"
+```
+
+```go
+const EOL = "\r\n"
+```
+
+```go
+const HostsFilePath = "/etc/hosts"
+```
+
+```go
+const HostsFilePath = "${SystemRoot}/System32/drivers/etc/hosts"
+```
+
 #### type Hosts
 
 ```go
@@ -19,7 +35,7 @@ Represents a hosts file.
 #### func  NewHosts
 
 ```go
-func NewHosts() Hosts
+func NewHosts() (Hosts, error)
 ```
 Return a new instance of ``Hosts``.
 
@@ -43,6 +59,13 @@ Flush any changes made to hosts file.
 func (h Hosts) Has(ip string, host string) bool
 ```
 Return a bool if ip/host combo in hosts file.
+
+#### func (*Hosts) IsWritable
+
+```go
+func (h *Hosts) IsWritable() bool
+```
+Return ```true``` if hosts file is writable.
 
 #### func (*Hosts) Load
 

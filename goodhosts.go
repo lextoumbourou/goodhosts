@@ -54,6 +54,7 @@ type Hosts struct {
 	Lines []HostsLine
 }
 
+// Return ```true``` if hosts file is writable.
 func (h *Hosts) IsWritable() bool {
 	_, err := os.OpenFile(h.Path, os.O_WRONLY, 0660)
 	if err != nil {
