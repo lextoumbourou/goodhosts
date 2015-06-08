@@ -54,6 +54,15 @@ type Hosts struct {
 	Lines []HostsLine
 }
 
+func (h *Hosts) IsWritable() bool {
+	_, err := os.OpenFile(h.Path, os.O_WRONLY, 0660)
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 // Load the hosts file into ```l.Lines```.
 // ```Load()``` is called by ```NewHosts()``` and ```Hosts.Flush()``` so you
 // generally you won't need to call this yourself.

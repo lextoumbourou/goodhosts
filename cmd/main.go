@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lextoumbourou/goodhosts"
 	"os"
-	"os/user"
 )
 
 func check(err error) {
@@ -45,7 +44,7 @@ func main() {
 				fmt.Println(lineOutput)
 			}
 
-			fmt.Printf("\nTotal: %d\n", total)
+			fmt.Print("\nTotal: %d\n", total)
 
 			return
 		case "check":
@@ -58,7 +57,7 @@ func main() {
 			host := os.Args[3]
 
 			if !hosts.Has(ip, host) {
-				fmt.Fprintf(os.Stderr, "%s %s is not in the hosts file\n", ip, host)
+				fmt.Fprintln(os.Stderr, fmt.Sprintf("%s %s is not in the hosts file", ip, host))
 				os.Exit(1)
 			}
 
@@ -68,20 +67,18 @@ func main() {
 				fmt.Println("usage: goodhosts add 127.0.0.1 facebook.com")
 				os.Exit(1)
 			}
-			user, err := user.Current()
-			check(err)
 
 			ip := os.Args[2]
 			inputHosts := os.Args[3:]
 
-			if user == nil || user.Uid != "0" {
-				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
+			if !hosts.IsWritable() {
+				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges?")
 				os.Exit(1)
 			}
 
 			err = hosts.Add(ip, inputHosts...)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, fmt.Sprintf("%s\n", err.Error()))
+				fmt.Fprintln(os.Stderr, fmt.Sprintf("%s", err.Error()))
 				os.Exit(2)
 			}
 
@@ -94,14 +91,12 @@ func main() {
 				fmt.Println("usage: goodhost remove 127.0.0.1 facebook.com")
 				os.Exit(1)
 			}
-			user, err := user.Current()
-			check(err)
 
 			ip := os.Args[2]
 			inputHosts := os.Args[3:]
 
-			if user == nil || user.Uid != "0" {
-				fmt.Fprintf(os.Stderr, "Need to be root user. Try running with sudo.\n")
+			if !hosts.IsWritable() {
+				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges?")
 				os.Exit(1)
 			}
 
