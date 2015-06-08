@@ -16,14 +16,21 @@ Simple [hosts file](http://en.wikipedia.org/wiki/Hosts_%28file%29) (```/etc/host
 
 ### Installation
 
-Download the [binary](http://github.com/lextoumbourou/goodhosts/releases/latest) and put it in your path.
+#### Linux
+
+Download the [binary](https://github.com/lextoumbourou/goodhosts/releases/download/v2.1.0/goodhosts-linux) and put it in your path.
 
 ```bash
-$ wget https://github.com/lextoumbourou/goodhosts/releases/download/v2.0.0/goodhosts
+$ wget -O goodhosts https://github.com/lextoumbourou/goodhosts/releases/download/v2.1.0/goodhosts-linux
 $ chmod +x goodhosts
 $ export PATH=$(pwd):$PATH
 $ goodhosts --help
 ```
+
+#### Windows
+
+Download the [binary][https://github.com/lextoumbourou/goodhosts/releases/download/v2.1.0/goodhosts-windows] and do Windowsy stuff with it (doc PR welcome welcome).
+
 
 ### List entries
 
@@ -168,6 +175,11 @@ func main() {
 ### [More](API.md)
 
 ## Changelog
+
+### 2.1.0 (2015-06-08)
+
+* Added Windows support.
+* Added command-line docs.
 
 ### 2.0.0 (2015-05-04)
 
