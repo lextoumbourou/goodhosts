@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"github.com/docopt/docopt-go"
 	"github.com/lextoumbourou/goodhosts"
 	"os"
 )
@@ -14,105 +14,108 @@ func check(err error) {
 }
 
 func main() {
-	showComments := flag.Bool("all", false, "Show comments when listing.")
+	usage := `Goodhosts - simple hosts file management.
 
-	flag.Parse()
+Usage:
+  goodhosts check <ip> <host>...
+  goodhosts add <ip> <host>...
+  goodhosts (rm|remove) <ip> <host>...
+  goodhosts list [--all]
+  goodhosts -h | --help
+  goodhosts --version
 
-	args := flag.Args()
+Options:
+  --all         Display comments when listing.
+  -h --help     Show this screen.
+  --version     Show the version.`
 
-	if len(args) > 0 {
-		command := args[0]
-		hosts, err := goodhosts.NewHosts()
-		check(err)
+	args, _ := docopt.Parse(usage, nil, true, "Goodhosts 2.0.0", false)
 
-		switch command {
-		case "list":
-			total := 0
-			for _, line := range hosts.Lines {
-				var lineOutput string
+	hosts, err := goodhosts.NewHosts()
+	check(err)
 
-				if line.IsComment() && !*showComments {
-					continue
-				}
+	if args["list"].(bool) {
+		total := 0
+		for _, line := range hosts.Lines {
+			var lineOutput string
 
-				lineOutput = fmt.Sprintf("%s", line.Raw)
-				if line.Err != nil {
-					lineOutput = fmt.Sprintf("%s # <<< Malformated!", lineOutput)
-				}
-				total += 1
-
-				fmt.Println(lineOutput)
+			if line.IsComment() && !args["--all"].(bool) {
+				continue
 			}
 
-			fmt.Print("\nTotal: %d\n", total)
-
-			return
-		case "check":
-			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhosts check 127.0.0.1 facebook.com")
-				os.Exit(1)
+			lineOutput = fmt.Sprintf("%s", line.Raw)
+			if line.Err != nil {
+				lineOutput = fmt.Sprintf("%s # <<< Malformated!", lineOutput)
 			}
+			total += 1
 
-			ip := os.Args[2]
-			host := os.Args[3]
-
-			if !hosts.Has(ip, host) {
-				fmt.Fprintln(os.Stderr, fmt.Sprintf("%s %s is not in the hosts file", ip, host))
-				os.Exit(1)
-			}
-
-			return
-		case "add":
-			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhosts add 127.0.0.1 facebook.com")
-				os.Exit(1)
-			}
-
-			ip := os.Args[2]
-			inputHosts := os.Args[3:]
-
-			if !hosts.IsWritable() {
-				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges.")
-				os.Exit(1)
-			}
-
-			err = hosts.Add(ip, inputHosts...)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, fmt.Sprintf("%s", err.Error()))
-				os.Exit(2)
-			}
-
-			err = hosts.Flush()
-			check(err)
-
-			return
-		case "rm", "remove":
-			if len(os.Args) < 3 {
-				fmt.Println("usage: goodhost remove 127.0.0.1 facebook.com")
-				os.Exit(1)
-			}
-
-			ip := os.Args[2]
-			inputHosts := os.Args[3:]
-
-			if !hosts.IsWritable() {
-				fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges.")
-				os.Exit(1)
-			}
-
-			err = hosts.Remove(ip, inputHosts...)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, fmt.Sprintf("%s\n", err.Error()))
-				os.Exit(2)
-			}
-
-			err = hosts.Flush()
-			check(err)
-
-			return
+			fmt.Println(lineOutput)
 		}
+
+		fmt.Printf("\nTotal: %d\n", total)
+
+		return
 	}
 
-	fmt.Println("Add --help for usage.")
-	os.Exit(2)
+	if args["check"].(bool) {
+		hasErr := false
+
+		ip := args["<ip>"].(string)
+		hostEntries := args["<host>"].([]string)
+
+		for _, hostEntry := range hostEntries {
+			if !hosts.Has(ip, hostEntry) {
+				fmt.Fprintln(os.Stderr, fmt.Sprintf("%s %s is not in the hosts file", ip, hostEntry))
+				hasErr = true
+			}
+		}
+
+		if hasErr {
+			os.Exit(1)
+		}
+
+		return
+	}
+
+	if args["add"].(bool) {
+		ip := args["<ip>"].(string)
+		hostEntries := args["<host>"].([]string)
+
+		if !hosts.IsWritable() {
+			fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges.")
+			os.Exit(1)
+		}
+
+		err = hosts.Add(ip, hostEntries...)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, fmt.Sprintf("%s", err.Error()))
+			os.Exit(2)
+		}
+
+		err = hosts.Flush()
+		check(err)
+
+		return
+	}
+
+	if args["rm"].(bool) || args["remove"].(bool) {
+		ip := args["<ip>"].(string)
+		hostEntries := args["<host>"].([]string)
+
+		if !hosts.IsWritable() {
+			fmt.Fprintln(os.Stderr, "Host file not writable. Try running with elevated privileges.")
+			os.Exit(1)
+		}
+
+		err = hosts.Remove(ip, hostEntries...)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, fmt.Sprintf("%s\n", err.Error()))
+			os.Exit(2)
+		}
+
+		err = hosts.Flush()
+		check(err)
+
+		return
+	}
 }
