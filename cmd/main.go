@@ -89,7 +89,7 @@ func main() {
 			check(err)
 
 			return
-		case "remove":
+		case "rm", "remove":
 			if len(os.Args) < 3 {
 				fmt.Println("usage: goodhost remove 127.0.0.1 facebook.com")
 				os.Exit(1)
