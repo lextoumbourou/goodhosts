@@ -23,7 +23,8 @@ func main() {
 
 	if len(args) > 0 {
 		command := args[0]
-		hosts := goodhosts.NewHosts()
+		hosts, err := goodhosts.NewHosts()
+		check(err)
 
 		switch command {
 		case "list":
