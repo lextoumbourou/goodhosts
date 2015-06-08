@@ -7,6 +7,11 @@ Simple [hosts file](http://en.wikipedia.org/wiki/Hosts_%28file%29) (```/etc/host
 
 [![Build Status](https://travis-ci.org/lextoumbourou/goodhosts.svg)](https://travis-ci.org/lextoumbourou/goodhosts)
 
+## Features
+
+* List, add, remove and check hosts file entries from code or the command-line.
+* Windows support.
+
 ## Command-Line Usage
 
 ### Installation
@@ -52,13 +57,13 @@ $ goodhosts add 127.0.0.1 facebook twitter gmail
 ### Remove an entry
 
 ```bash
-$ goodhosts remove 127.0.0.1 facebook
+$ goodhosts rm 127.0.0.1 facebook
 ```
 
 Or *entries*.
 
 ```bash
-$ goodhosts remove 127.0.0.1 facebook twitter gmail
+$ goodhosts rm 127.0.0.1 facebook twitter gmail
 ```
 
 ### More

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -53,6 +54,16 @@ type Hosts struct {
 	Lines []HostsLine
 }
 
+// Return ```true``` if hosts file is writable.
+func (h *Hosts) IsWritable() bool {
+	_, err := os.OpenFile(h.Path, os.O_WRONLY, 0660)
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 // Load the hosts file into ```l.Lines```.
 // ```Load()``` is called by ```NewHosts()``` and ```Hosts.Flush()``` so you
 // generally you won't need to call this yourself.
@@ -94,7 +105,7 @@ func (h Hosts) Flush() error {
 	w := bufio.NewWriter(file)
 
 	for _, line := range h.Lines {
-		fmt.Fprintln(w, line.Raw)
+		fmt.Fprintf(w, "%s%s", line.Raw, eol)
 	}
 
 	err = w.Flush()
@@ -206,12 +217,15 @@ func (h Hosts) getIpPosition(ip string) int {
 }
 
 // Return a new instance of ``Hosts``.
-func NewHosts() Hosts {
-	// To do: add Windows support.
-	path := "/etc/hosts"
-	host := Hosts{Path: path}
+func NewHosts() (Hosts, error) {
+	osHostsFilePath := os.ExpandEnv(filepath.FromSlash(hostsFilePath))
 
-	host.Load()
+	hosts := Hosts{Path: osHostsFilePath}
 
-	return host
+	err := hosts.Load()
+	if err != nil {
+		return hosts, err
+	}
+
+	return hosts, nil
 }
