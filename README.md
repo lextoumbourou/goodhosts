@@ -7,6 +7,11 @@ Simple [hosts file](http://en.wikipedia.org/wiki/Hosts_%28file%29) management in
 
 [![Build Status](https://travis-ci.org/lextoumbourou/goodhosts.svg)](https://travis-ci.org/lextoumbourou/goodhosts)
 
+## Features
+
+* List, add, remove and check hosts file entries from code or the command-line.
+* Windows support.
+
 ## Command-Line Usage
 
 ### Installation
