@@ -46,31 +46,31 @@ Add ```--all``` flag to include comments.
 ### Check for an entry
 
 ```bash
-$ goodhosts check 127.0.0.1 facebook
+$ goodhosts check 127.0.0.1 facebook.com
 ```
 
 ### Add an entry
 
 ```bash
-$ goodhosts add 127.0.0.1 facebook
+$ goodhosts add 127.0.0.1 facebook.com
 ```
 
 Or *entries*.
 
 ```bash
-$ goodhosts add 127.0.0.1 facebook twitter gmail
+$ goodhosts add 127.0.0.1 facebook.com twitter.com gmail.com
 ```
 
 ### Remove an entry
 
 ```bash
-$ goodhosts rm 127.0.0.1 facebook
+$ goodhosts rm 127.0.0.1 facebook.com
 ```
 
 Or *entries*.
 
 ```bash
-$ goodhosts rm 127.0.0.1 facebook twitter gmail
+$ goodhosts rm 127.0.0.1 facebook.com twitter.com gmail.com
 ```
 
 ### More
@@ -119,7 +119,7 @@ import (
 func main() {
     hosts := goodhosts.NewHosts()
 
-    if hosts.Has("127.0.0.1", "facebook") {
+    if hosts.Has("127.0.0.1", "facebook.com") {
         fmt.Println("Entry exists!")
         return
     }
@@ -142,7 +142,7 @@ func main() {
     hosts := goodhosts.NewHosts()
 
     // Note that nothing will be added to the hosts file until ``hosts.Flush`` is called.
-    hosts.Add("127.0.0.1", "facebook.com", "twitter")
+    hosts.Add("127.0.0.1", "facebook.com", "twitter.com")
 
     if err := hosts.Flush(); err != nil {
         panic(err)
@@ -164,7 +164,7 @@ func main() {
     hosts := goodhosts.NewHosts()
 
     // Same deal, yo: call hosts.Flush() to make permanent.
-    hosts.Remove("127.0.0.1", "facebook", "twitter")
+    hosts.Remove("127.0.0.1", "facebook.com", "twitter.com")
 
     if err := hosts.Flush(); err != nil {
         panic(err)
