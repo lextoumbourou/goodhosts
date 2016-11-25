@@ -216,20 +216,22 @@ func (h Hosts) getIpPosition(ip string) int {
 	return -1
 }
 
-// Return a new instance of ``Hosts``.
+// Return a new instance of ``Hosts`` using the default hosts file path.
 func NewHosts() (Hosts, error) {
-	osHostsFilePath := ""
+	osHostsFilePath := hostsFilePath
 
-	if os.Getenv("HOSTS_PATH") == "" {
-		osHostsFilePath = os.ExpandEnv(filepath.FromSlash(hostsFilePath))
-	} else {
-		osHostsFilePath = os.Getenv("HOSTS_PATH")
+	if env, isset := os.LookupEnv("HOSTS_PATH"); isset {
+		osHostsFilePath = os.ExpandEnv(filepath.FromSlash(env))
 	}
 
+	return NewCustomHosts(osHostsFilePath)
+}
+
+// Return a new instance of ``Hosts`` using a custom hosts file path.
+func NewCustomHosts(osHostsFilePath string) (Hosts, error) {
 	hosts := Hosts{Path: osHostsFilePath}
 
-	err := hosts.Load()
-	if err != nil {
+	if err := hosts.Load(); err != nil {
 		return hosts, err
 	}
 

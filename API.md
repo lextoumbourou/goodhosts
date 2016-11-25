@@ -21,7 +21,14 @@ Represents a hosts file.
 ```go
 func NewHosts() (Hosts, error)
 ```
-Return a new instance of ``Hosts``.
+Return a new instance of ``Hosts`` using the default hosts file path.
+
+#### func  NewCustomHosts
+
+```go
+func NewCustomHosts(string customFilePath) (Hosts, error)
+```
+Return a new instance of ``Hosts`` using a custom hosts file path.
 
 #### func (*Hosts) Add
 
