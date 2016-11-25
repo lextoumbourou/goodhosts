@@ -222,7 +222,7 @@ func NewHosts() (Hosts, error) {
 }
 
 // Return a new instance of ``Hosts`` using a custom hosts file path.
-func NewCustomHosts(string customFilePath) (Hosts, error) {
+func NewCustomHosts(customFilePath string) (Hosts, error) {
 	osHostsFilePath := os.ExpandEnv(filepath.FromSlash(customFilePath))
 
 	hosts := Hosts{Path: osHostsFilePath}
