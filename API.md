@@ -26,7 +26,7 @@ Return a new instance of ``Hosts`` using the default hosts file path.
 #### func  NewCustomHosts
 
 ```go
-func NewCustomHosts(string customFilePath) (Hosts, error)
+func NewCustomHosts(customFilePath string) (Hosts, error)
 ```
 Return a new instance of ``Hosts`` using a custom hosts file path.
 
