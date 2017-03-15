@@ -220,7 +220,7 @@ func (h Hosts) getIpPosition(ip string) int {
 func NewHosts() (Hosts, error) {
 	osHostsFilePath := hostsFilePath
 
-	if env, isset := os.LookupEnv("HOSTS_PATH"); isset {
+	if env, isset := os.LookupEnv("HOSTS_PATH"); isset && len(env) > 0 {
 		osHostsFilePath = os.ExpandEnv(filepath.FromSlash(env))
 	}
 
