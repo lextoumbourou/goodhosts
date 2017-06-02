@@ -151,6 +151,13 @@ func (h Hosts) Has(ip string, host string) bool {
 	return pos != -1
 }
 
+// Return a bool if ip/host combo in hosts file.
+func (h Hosts) HasHostname(host string) bool {
+	pos := h.getHostnamePosition(host)
+
+	return pos != -1
+}
+
 // Remove an entry from the hosts file.
 func (h *Hosts) Remove(ip string, hosts ...string) error {
 	var outputLines []HostsLine
@@ -190,11 +197,37 @@ func (h *Hosts) Remove(ip string, hosts ...string) error {
 	return nil
 }
 
+func (h *Hosts) RemoveByHostname(host string) {
+	pos := h.getHostnamePosition(host)
+	for pos > -1 {
+		h.removeByPosition(pos)
+		pos = h.getHostnamePosition(host)
+	}
+}
+
+func (h *Hosts) removeByPosition(pos int) {
+	h.Lines[pos] = h.Lines[len(h.Lines)-1]
+	h.Lines = h.Lines[:len(h.Lines)-1]
+}
+
 func (h Hosts) getHostPosition(ip string, host string) int {
 	for i := range h.Lines {
 		line := h.Lines[i]
 		if !line.IsComment() && line.Raw != "" {
 			if ip == line.IP && itemInSlice(host, line.Hosts) {
+				return i
+			}
+		}
+	}
+
+	return -1
+}
+
+func (h Hosts) getHostnamePosition(host string) int {
+	for i := range h.Lines {
+		line := h.Lines[i]
+		if !line.IsComment() && line.Raw != "" {
+			if sliceContainsItem(host, line.Hosts) {
 				return i
 			}
 		}

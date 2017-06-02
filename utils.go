@@ -1,10 +1,23 @@
 package goodhosts
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func itemInSlice(item string, list []string) bool {
 	for _, i := range list {
 		if i == item {
+			return true
+		}
+	}
+
+	return false
+}
+
+func sliceContainsItem(item string, list []string) bool {
+	for _, i := range list {
+		if strings.Contains(i, item) {
 			return true
 		}
 	}
