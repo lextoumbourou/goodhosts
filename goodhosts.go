@@ -198,12 +198,13 @@ func (h *Hosts) Remove(ip string, hosts ...string) error {
 }
 
 // Remove  entries by hostname from the hosts file.
-func (h *Hosts) RemoveByHostname(host string) {
+func (h *Hosts) RemoveByHostname(host string) error {
 	pos := h.getHostnamePosition(host)
 	for pos > -1 {
 		h.removeByPosition(pos)
 		pos = h.getHostnamePosition(host)
 	}
+	return nil
 }
 
 func (h *Hosts) removeByPosition(pos int) {
