@@ -118,3 +118,50 @@ func TestHostsRemoveMultipleEntries(t *testing.T) {
 		t.Error("Failed to remove multiple entries.")
 	}
 }
+
+func TestHostnamesHas(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"), NewHostsLine("10.0.0.7 nada")}
+
+	// We should find this entry.
+	if !hosts.HasHostname("nada") {
+		t.Error("Couldn't find entry in hosts file.")
+	}
+
+	// We shouldn't find this entry
+	if hosts.HasHostname("shuda") {
+		t.Error("Found entry that isn't in hosts file.")
+	}
+}
+
+func TestHostsRemoveByHostname(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 yadda"),
+		NewHostsLine("168.1.1.1 yadda"),
+	}
+
+	hosts.RemoveByHostname("yadda")
+	// We shouldn't find this entry
+	if hosts.HasHostname("yadda") {
+		t.Error("Found entry that isn't in hosts file.")
+	}
+}
+
+func TestHostsRemoveByHostnameWhenHostnameNotExist(t *testing.T) {
+	hosts := new(Hosts)
+	hosts.Lines = []HostsLine{
+		NewHostsLine("127.0.0.1 prada"),
+	}
+
+	hosts.RemoveByHostname("yadda")
+	// We shouldn't find this entry
+	if hosts.HasHostname("yadda") {
+		t.Error("Found entry that isn't in hosts file.")
+	}
+
+	if !hosts.HasHostname("prada") {
+		t.Error("Found entry that is in hosts file.")
+	}
+}

@@ -151,7 +151,7 @@ func (h Hosts) Has(ip string, host string) bool {
 	return pos != -1
 }
 
-// Return a bool if ip/host combo in hosts file.
+// Return a bool if hostname in hosts file.
 func (h Hosts) HasHostname(host string) bool {
 	pos := h.getHostnamePosition(host)
 
@@ -197,6 +197,7 @@ func (h *Hosts) Remove(ip string, hosts ...string) error {
 	return nil
 }
 
+// Remove  entries by hostname from the hosts file.
 func (h *Hosts) RemoveByHostname(host string) {
 	pos := h.getHostnamePosition(host)
 	for pos > -1 {
