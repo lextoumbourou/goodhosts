@@ -11,7 +11,7 @@ func TestHostsLineIsComment(t *testing.T) {
 	line := NewHostsLine(comment)
 	result := line.IsComment()
 	if !result {
-		t.Error(fmt.Sprintf("'%s' should be a comment"), comment)
+		t.Error(fmt.Sprintf("'%s' should be a comment", comment))
 	}
 }
 
