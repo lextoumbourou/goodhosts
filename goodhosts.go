@@ -122,23 +122,51 @@ func (h *Hosts) Add(ip string, hosts ...string) error {
 		return errors.New(fmt.Sprintf("%q is an invalid IP address.", ip))
 	}
 
-	position := h.getIpPosition(ip)
-	if position == -1 {
-		endLine := NewHostsLine(buildRawLine(ip, hosts))
-		// Ip line is not in file, so we just append our new line.
-		h.Lines = append(h.Lines, endLine)
+	if appendToLine {
+		position := h.getIpPosition(ip)
+		if position == -1 {
+			endLine := NewHostsLine(buildRawLine(ip, hosts))
+			// Ip line is not in file, so we just append our new line.
+			h.Lines = append(h.Lines, endLine)
+		} else {
+			// Otherwise, we replace the line in the correct position
+			newHosts := h.Lines[position].Hosts
+			for _, addHost := range hosts {
+				if itemInSlice(addHost, newHosts) {
+					continue
+				}
+
+				newHosts = append(newHosts, addHost)
+			}
+			endLine := NewHostsLine(buildRawLine(ip, newHosts))
+			h.Lines[position] = endLine
+		}
 	} else {
-		// Otherwise, we replace the line in the correct position
-		newHosts := h.Lines[position].Hosts
+	HOSTS:
 		for _, addHost := range hosts {
-			if itemInSlice(addHost, newHosts) {
-				continue
+			// Check if there already exists a host -> ip mapping
+			for _, line := range h.Lines {
+				// Ignore comments and empty lines
+				if line.IsComment() || line.Raw == "" {
+					continue
+				}
+
+				// Ignore lines for other IP's
+				if line.IP != ip {
+					continue
+				}
+
+				for _, host := range line.Hosts {
+					// Skip host as there already exists a host -> ip mapping
+					if host == addHost {
+						continue HOSTS
+					}
+				}
 			}
 
-			newHosts = append(newHosts, addHost)
+			endLine := NewHostsLine(buildRawLine(ip, []string{addHost}))
+			h.Lines = append(h.Lines, endLine)
 		}
-		endLine := NewHostsLine(buildRawLine(ip, newHosts))
-		h.Lines[position] = endLine
 	}
 
 	return nil
