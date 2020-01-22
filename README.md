@@ -1,4 +1,8 @@
-# Goodhosts
+# Goodhosts (deprecated)
+
+This library is now deprecated. See the [goodhosts organisation](https://github.com/goodhosts) for the current maintained version.
+
+***
 
 Simple [hosts file](http://en.wikipedia.org/wiki/Hosts_%28file%29) (```/etc/hosts```) management in Go (golang).
 
